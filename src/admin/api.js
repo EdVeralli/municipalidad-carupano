@@ -48,3 +48,13 @@ export const getConversations = (limit = 50) =>
 
 export const getConversation = (conversationId) =>
   request(`/admin/clients/${CLIENT_ID}/conversations/${conversationId}`);
+
+export const deleteConversation = (conversationId) =>
+  request(`/admin/clients/${CLIENT_ID}/conversations/${conversationId}`, {
+    method: 'DELETE',
+  });
+
+export const deleteAllConversations = () =>
+  request(`/admin/clients/${CLIENT_ID}/conversations`, {
+    method: 'DELETE',
+  });

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { MessageSquare, X, User, Bot } from 'lucide-react';
-import { getConversations, getConversation } from '../api';
+import { MessageSquare, X, User, Bot, Trash2 } from 'lucide-react';
+import { getConversations, getConversation, deleteConversation, deleteAllConversations } from '../api';
 import '../components/AdminLayout.css';
 
 const Conversaciones = () => {
@@ -45,6 +45,31 @@ const Conversaciones = () => {
     setMessages([]);
   };
 
+  const handleDelete = async (conv, e) => {
+    e.stopPropagation();
+    if (!confirm('¿Eliminar esta conversación?')) return;
+    try {
+      await deleteConversation(conv.id);
+      if (selectedConversation?.id === conv.id) {
+        closeDetail();
+      }
+      loadConversations();
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    if (!confirm('¿Eliminar TODAS las conversaciones? Esta acción no se puede deshacer.')) return;
+    try {
+      await deleteAllConversations();
+      closeDetail();
+      loadConversations();
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  };
+
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('es-VE', {
@@ -83,6 +108,11 @@ const Conversaciones = () => {
         <div className="admin-card">
           <div className="admin-card-header">
             <h3>{conversations.length} conversaciones</h3>
+            {conversations.length > 0 && (
+              <button className="admin-btn admin-btn-danger" onClick={handleDeleteAll}>
+                <Trash2 size={16} /> Eliminar todas
+              </button>
+            )}
           </div>
 
           {conversations.length > 0 ? (
@@ -120,9 +150,15 @@ const Conversaciones = () => {
                       </span>
                     </td>
                     <td style={{ fontSize: '0.8rem' }}>{formatDate(conv.started_at)}</td>
-                    <td>
+                    <td style={{ display: 'flex', gap: 8 }}>
                       <button className="admin-btn admin-btn-secondary admin-btn-sm">
                         Ver
+                      </button>
+                      <button
+                        className="admin-btn admin-btn-danger admin-btn-sm"
+                        onClick={(e) => handleDelete(conv, e)}
+                      >
+                        <Trash2 size={14} />
                       </button>
                     </td>
                   </tr>

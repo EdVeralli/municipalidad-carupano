@@ -286,6 +286,31 @@ def get_conversation(client_id: int, conversation_id: int, db: Session = Depends
     return conversation
 
 
+@router.delete("/clients/{client_id}/conversations/{conversation_id}")
+def delete_conversation(client_id: int, conversation_id: int, db: Session = Depends(get_db)):
+    """Eliminar una conversación y todos sus mensajes"""
+    conversation = (
+        db.query(Conversation)
+        .filter(Conversation.id == conversation_id)
+        .filter(Conversation.client_id == client_id)
+        .first()
+    )
+    if not conversation:
+        raise HTTPException(status_code=404, detail="Conversación no encontrada")
+
+    db.delete(conversation)
+    db.commit()
+    return {"message": "Conversación eliminada"}
+
+
+@router.delete("/clients/{client_id}/conversations")
+def delete_all_conversations(client_id: int, db: Session = Depends(get_db)):
+    """Eliminar todas las conversaciones de un cliente"""
+    db.query(Conversation).filter(Conversation.client_id == client_id).delete()
+    db.commit()
+    return {"message": "Todas las conversaciones eliminadas"}
+
+
 # ============ DASHBOARD ============
 
 @router.get("/clients/{client_id}/dashboard", response_model=DashboardStats)

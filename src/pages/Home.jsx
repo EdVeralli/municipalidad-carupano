@@ -4,6 +4,7 @@ import {
   Users, Phone, ArrowRight, CheckCircle,
   Waves, Sun, TreePalm
 } from 'lucide-react';
+import Carousel from '../components/Carousel';
 import './Home.css';
 
 const Home = () => {
@@ -118,6 +119,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Carousel Gallery */}
+      <Carousel />
 
       {/* About Section */}
       <section className="about-section">
