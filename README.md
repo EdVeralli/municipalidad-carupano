@@ -19,6 +19,8 @@ Sistema web para la Municipalidad de Carupano con ChatBot integrado y panel de a
 - Sitio web responsive y moderno
 - 7 secciones: Inicio, Servicios, Tramites, Turismo, Noticias, Alcaldia, Contacto
 - Widget de chat integrado
+- Galeria carousel con imagenes de Carupano
+- Imagenes personalizadas (panoramica, paisajes)
 
 ### Backend (FastAPI)
 - API REST para el chatbot
@@ -76,6 +78,8 @@ uvicorn app.main:app --reload --port 8000
 - `PUT /admin/clients/{id}/rules/{rule_id}` - Editar regla
 - `DELETE /admin/clients/{id}/rules/{rule_id}` - Eliminar regla
 - `GET /admin/clients/{id}/conversations` - Ver conversaciones
+- `DELETE /admin/clients/{id}/conversations/{conv_id}` - Eliminar conversacion
+- `DELETE /admin/clients/{id}/conversations` - Eliminar todas las conversaciones
 - `GET /admin/clients/{id}/dashboard` - Estadisticas
 
 ### Documentacion
@@ -86,8 +90,15 @@ uvicorn app.main:app --reload --port 8000
 
 ```
 municipalidad-carupano/
+├── public/                 # Imagenes estaticas
+│   ├── panoramica.png     # Fondo hero
+│   ├── Foto1.png          # Carousel
+│   └── Foto2.png          # Carousel
 ├── src/                    # Frontend React
-│   ├── components/
+│   ├── admin/             # Panel de administracion
+│   │   ├── components/
+│   │   └── pages/         # Dashboard, Reglas, Conversaciones
+│   ├── components/        # Carousel, ChatBot, Header, Footer
 │   ├── pages/
 │   ├── data/
 │   └── styles/
@@ -111,6 +122,14 @@ municipalidad-carupano/
 2. Escribe tu consulta
 3. El bot busca coincidencias en las reglas configuradas
 4. Responde con la regla que tenga mayor prioridad
+
+## Panel de Administracion
+
+Accede a `/admin` para gestionar el chatbot:
+
+- **Dashboard**: Estadisticas de conversaciones y mensajes
+- **Reglas**: Crear, editar y eliminar reglas del bot
+- **Conversaciones**: Ver historial de chats y eliminar conversaciones
 
 ## Licencia
 
