@@ -116,6 +116,27 @@ municipalidad-carupano/
 └── README.md
 ```
 
+## Ejecucion
+
+Abrir dos terminales:
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+venv\Scripts\activate        # Windows
+uvicorn app.main:app --reload --port 8000
+```
+
+**Terminal 2 - Frontend:**
+```bash
+npm run dev
+```
+
+Acceder a:
+- **Sitio web:** http://localhost:5173
+- **Panel admin:** http://localhost:5173/admin
+- **API docs:** http://localhost:8000/docs
+
 ## Uso del ChatBot
 
 1. Haz clic en el boton de chat (esquina inferior derecha)
