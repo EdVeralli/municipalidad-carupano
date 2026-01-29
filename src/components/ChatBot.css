@@ -359,3 +359,29 @@
     height: 55px;
   }
 }
+
+/* Status Offline */
+.status-offline {
+  color: #fc8181 !important;
+}
+
+.status-offline::before {
+  background-color: #fc8181 !important;
+}
+
+/* Offline Banner */
+.offline-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background-color: #fed7d7;
+  color: #c53030;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.offline-banner svg {
+  flex-shrink: 0;
+}

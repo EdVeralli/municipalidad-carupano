@@ -1,85 +1,116 @@
-# Municipalidad de Carupano - Demo
+# Municipalidad de Carupano - Plataforma Chatbot
 
-Sistema web para la Municipalidad de Carupano (Municipio Bermudez, Estado Sucre, Venezuela) con ChatBot integrado para atencion ciudadana.
+Sistema web para la Municipalidad de Carupano con ChatBot integrado y panel de administracion.
+
+## Arquitectura
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│    Frontend     │────▶│     Backend     │────▶│    Database     │
+│  React + Vite   │     │  Python FastAPI │     │     SQLite      │
+│                 │◀────│                 │     │                 │
+│  Widget Chat    │     │  API REST       │     │  Reglas/Chat    │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+```
 
 ## Caracteristicas
 
+### Frontend (React)
 - Sitio web responsive y moderno
 - 7 secciones: Inicio, Servicios, Tramites, Turismo, Noticias, Alcaldia, Contacto
-- **ChatBot integrado** con respuestas sobre:
-  - Tramites municipales (solvencia, patente, permisos)
-  - Horarios de atencion
-  - Ubicacion de oficinas
-  - Turismo y eventos (Carnaval de Carupano)
-  - Servicios municipales
-  - Contacto y emergencias
+- Widget de chat integrado
 
-## Tecnologias
-
-- React 19
-- Vite
-- React Router DOM
-- Lucide React (iconos)
-- CSS3 con variables personalizadas
+### Backend (FastAPI)
+- API REST para el chatbot
+- Sistema de reglas con palabras clave
+- Panel de administracion
+- Historial de conversaciones
+- Multi-cliente (varios municipios en una instancia)
 
 ## Instalacion
 
-```bash
-# Clonar el repositorio
-git clone https://github.com/EdVeralli/municipalidad-carupano.git
+### Frontend
 
-# Entrar al directorio
+```bash
 cd municipalidad-carupano
+npm install
+npm run dev
+```
+
+### Backend
+
+```bash
+cd backend
+
+# Crear entorno virtual
+python -m venv venv
+
+# Activar entorno (Windows)
+venv\Scripts\activate
+
+# Activar entorno (Linux/Mac)
+source venv/bin/activate
 
 # Instalar dependencias
-npm install
+pip install -r requirements.txt
 
-# Iniciar servidor de desarrollo
-npm run dev
+# Inicializar base de datos con datos de ejemplo
+python init_data.py
+
+# Iniciar servidor
+uvicorn app.main:app --reload --port 8000
+```
+
+## Endpoints de la API
+
+### Chat (Widget)
+- `POST /chat/{client_slug}` - Enviar mensaje al bot
+- `GET /chat/{client_slug}/history/{session_id}` - Historial de conversacion
+- `GET /chat/{client_slug}/config` - Configuracion del chat
+
+### Admin (Panel)
+- `GET /admin/clients` - Listar clientes
+- `POST /admin/clients` - Crear cliente
+- `GET /admin/clients/{id}/rules` - Listar reglas
+- `POST /admin/clients/{id}/rules` - Crear regla
+- `PUT /admin/clients/{id}/rules/{rule_id}` - Editar regla
+- `DELETE /admin/clients/{id}/rules/{rule_id}` - Eliminar regla
+- `GET /admin/clients/{id}/conversations` - Ver conversaciones
+- `GET /admin/clients/{id}/dashboard` - Estadisticas
+
+### Documentacion
+- `GET /docs` - Swagger UI
+- `GET /redoc` - ReDoc
+
+## Estructura del Proyecto
+
+```
+municipalidad-carupano/
+├── src/                    # Frontend React
+│   ├── components/
+│   ├── pages/
+│   ├── data/
+│   └── styles/
+├── backend/                # Backend Python
+│   ├── app/
+│   │   ├── models/        # Modelos SQLAlchemy
+│   │   ├── routers/       # Endpoints API
+│   │   ├── services/      # Logica del chatbot
+│   │   ├── database.py
+│   │   ├── schemas.py
+│   │   └── main.py
+│   ├── init_data.py       # Script inicializacion
+│   └── requirements.txt
+├── package.json
+└── README.md
 ```
 
 ## Uso del ChatBot
 
 1. Haz clic en el boton de chat (esquina inferior derecha)
-2. Escribe tu consulta o usa los botones de acceso rapido
-3. El bot responde sobre tramites, horarios, turismo, etc.
-
-### Ejemplos de consultas:
-- "Cuales son los horarios de atencion?"
-- "Que necesito para la solvencia municipal?"
-- "Que lugares puedo visitar en Carupano?"
-- "Cuando es el carnaval?"
-
-## Estructura del Proyecto
-
-```
-src/
-├── components/
-│   ├── Header.jsx       # Navegacion
-│   ├── Footer.jsx       # Pie de pagina
-│   ├── ChatBot.jsx      # Asistente virtual
-│   └── *.css
-├── pages/
-│   ├── Home.jsx
-│   ├── Servicios.jsx
-│   ├── Tramites.jsx
-│   ├── Turismo.jsx
-│   ├── Noticias.jsx
-│   ├── Alcaldia.jsx
-│   └── Contacto.jsx
-├── data/
-│   └── chatbotResponses.js  # Base de conocimientos
-└── styles/
-    └── globals.css
-```
-
-## Demo
-
-Este es un proyecto de demostracion. Para produccion se recomienda:
-- Integrar API de IA (Claude/OpenAI) para respuestas mas inteligentes
-- Conectar con base de datos real
-- Agregar autenticacion para tramites en linea
-- Usar imagenes reales de Carupano
+2. Escribe tu consulta
+3. El bot busca coincidencias en las reglas configuradas
+4. Responde con la regla que tenga mayor prioridad
 
 ## Licencia
 

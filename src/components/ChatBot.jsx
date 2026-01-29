@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Minimize2 } from 'lucide-react';
-import { findResponse } from '../data/chatbotResponses';
+import { MessageCircle, X, Send, Bot, User, Minimize2, WifiOff } from 'lucide-react';
 import './ChatBot.css';
+
+// Configuracion del backend
+const API_URL = 'http://localhost:8000';
+const CLIENT_SLUG = 'municipalidad-carupano';
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,6 +19,8 @@ const ChatBot = () => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
+  const [isOnline, setIsOnline] = useState(true);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -33,15 +38,58 @@ const ChatBot = () => {
     }
   }, [isOpen, isMinimized]);
 
-  const handleSubmit = (e) => {
+  // Verificar conexion con el backend al abrir el chat
+  useEffect(() => {
+    if (isOpen) {
+      fetch(`${API_URL}/health`)
+        .then(res => res.ok ? setIsOnline(true) : setIsOnline(false))
+        .catch(() => setIsOnline(false));
+    }
+  }, [isOpen]);
+
+  const sendMessageToBackend = async (message) => {
+    try {
+      const response = await fetch(`${API_URL}/chat/${CLIENT_SLUG}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: message,
+          session_id: sessionId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+
+      const data = await response.json();
+
+      // Guardar session_id para mantener la conversacion
+      if (data.session_id && !sessionId) {
+        setSessionId(data.session_id);
+      }
+
+      return data.response;
+    } catch (error) {
+      console.error('Error al comunicarse con el backend:', error);
+      setIsOnline(false);
+      return 'Lo siento, hay un problema de conexión. Por favor, intenta de nuevo más tarde.';
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
+
+    const messageText = inputValue;
 
     // Agregar mensaje del usuario
     const userMessage = {
       id: Date.now(),
       type: 'user',
-      text: inputValue,
+      text: messageText,
       time: new Date()
     };
 
@@ -49,18 +97,18 @@ const ChatBot = () => {
     setInputValue('');
     setIsTyping(true);
 
-    // Simular tiempo de respuesta del bot
-    setTimeout(() => {
-      const botResponse = findResponse(inputValue);
-      const botMessage = {
-        id: Date.now() + 1,
-        type: 'bot',
-        text: botResponse,
-        time: new Date()
-      };
-      setMessages(prev => [...prev, botMessage]);
-      setIsTyping(false);
-    }, 800 + Math.random() * 700);
+    // Enviar al backend y obtener respuesta
+    const botResponse = await sendMessageToBackend(messageText);
+
+    const botMessage = {
+      id: Date.now() + 1,
+      type: 'bot',
+      text: botResponse,
+      time: new Date()
+    };
+
+    setMessages(prev => [...prev, botMessage]);
+    setIsTyping(false);
   };
 
   const handleQuickAction = (action) => {
@@ -97,7 +145,9 @@ const ChatBot = () => {
               </div>
               <div>
                 <h4>Asistente Municipal</h4>
-                <span className="status-online">En línea</span>
+                <span className={isOnline ? "status-online" : "status-offline"}>
+                  {isOnline ? 'En línea' : 'Sin conexión'}
+                </span>
               </div>
             </div>
             <div className="chatbot-header-actions">
@@ -112,6 +162,14 @@ const ChatBot = () => {
 
           {!isMinimized && (
             <>
+              {/* Offline Banner */}
+              {!isOnline && (
+                <div className="offline-banner">
+                  <WifiOff size={16} />
+                  <span>Conexión perdida con el servidor</span>
+                </div>
+              )}
+
               {/* Messages */}
               <div className="chatbot-messages">
                 {messages.map((message) => (
@@ -175,7 +233,7 @@ const ChatBot = () => {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                 />
-                <button type="submit" disabled={!inputValue.trim()}>
+                <button type="submit" disabled={!inputValue.trim() || isTyping}>
                   <Send size={20} />
                 </button>
               </form>
