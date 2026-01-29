@@ -1,5 +1,5 @@
 // API client para el panel de administracion
-const API_URL = 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const CLIENT_ID = 1; // ID del cliente (Municipalidad de Carupano)
 
 // Helper para hacer requests

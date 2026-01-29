@@ -152,6 +152,30 @@ Accede a `/admin` para gestionar el chatbot:
 - **Reglas**: Crear, editar y eliminar reglas del bot
 - **Conversaciones**: Ver historial de chats y eliminar conversaciones
 
+## Deploy en Produccion
+
+### Backend en Render (gratis)
+
+1. Ir a [render.com](https://render.com) y crear cuenta
+2. New → Web Service → Conectar repo de GitHub
+3. Configurar:
+   - **Root Directory:** `backend`
+   - **Build Command:** `pip install -r requirements.txt && python init_data.py`
+   - **Start Command:** `gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$PORT`
+4. Deploy y copiar la URL (ej: `https://municipalidad-carupano-api.onrender.com`)
+
+### Frontend en Vercel (gratis)
+
+1. Ir a [vercel.com](https://vercel.com) y crear cuenta
+2. New Project → Importar repo de GitHub
+3. En Settings → Environment Variables agregar:
+   - `VITE_API_URL` = URL de Render (del paso anterior)
+4. Deploy
+
+### URLs finales
+- **Sitio:** `https://municipalidad-carupano.vercel.app`
+- **API:** `https://municipalidad-carupano-api.onrender.com`
+
 ## Licencia
 
 MIT

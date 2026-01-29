@@ -3,7 +3,7 @@ import { MessageCircle, X, Send, Bot, User, Minimize2, WifiOff } from 'lucide-re
 import './ChatBot.css';
 
 // Configuracion del backend
-const API_URL = 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const CLIENT_SLUG = 'municipalidad-carupano';
 
 const ChatBot = () => {
